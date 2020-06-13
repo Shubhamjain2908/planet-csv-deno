@@ -11,8 +11,23 @@ async function loadPlanetsData() {
     header: true,
     comment: "#",
   });
+
+  // The operating system has reached a maximum amount of open files and won't let us open anymore. Our program crashes! To solve this, we need to make sure we call Deno.close() after every Deno.open().
   Deno.close(file.rid);
-  console.log(result);
+
+  const planets = result.filter((planet: any) => {
+    const planetaryRadius = Number(planet["koi_prad"]);
+    const stellarRadius = Number(planet["koi_srad"]);
+    const stellarMass = Number(planet["koi_smass"]);
+
+    return planet["koi_disposition"] === "CONFIRMED" &&
+      planetaryRadius > 0.5 && planetaryRadius < 1.5 &&
+      stellarRadius > 0.99 && stellarRadius < 1.01 &&
+      stellarMass > 0.78 && stellarMass < 1.04;
+  });
+
+  return planets;
 }
 
-await loadPlanetsData();
+const newEarth = await loadPlanetsData();
+console.log(newEarth);
