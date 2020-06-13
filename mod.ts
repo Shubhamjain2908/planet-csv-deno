@@ -2,6 +2,10 @@ import { parse } from "https://deno.land/std/encoding/csv.ts";
 import { BufReader } from "https://deno.land/std/io/bufio.ts";
 import { join } from "https://deno.land/std/path/mod.ts";
 
+interface Planet {
+  [key: string]: string;
+}
+
 async function loadPlanetsData() {
   const path = join(".", "kepler_exoplanets_nasa.csv");
 
@@ -15,7 +19,7 @@ async function loadPlanetsData() {
   // The operating system has reached a maximum amount of open files and won't let us open anymore. Our program crashes! To solve this, we need to make sure we call Deno.close() after every Deno.open().
   Deno.close(file.rid);
 
-  const planets = result.filter((planet: any) => {
+  const planets = (result as Array<Planet>).filter((planet: Planet) => {
     const planetaryRadius = Number(planet["koi_prad"]);
     const stellarRadius = Number(planet["koi_srad"]);
     const stellarMass = Number(planet["koi_smass"]);
@@ -30,4 +34,4 @@ async function loadPlanetsData() {
 }
 
 const newEarth = await loadPlanetsData();
-console.log(newEarth);
+console.log(newEarth.length);
